@@ -1,103 +1,49 @@
-#ifndef PRINTF_MAIN_H
-#define PRINTF_MAIN_H
+#ifndef MAIN_H
+#define MAIN_H
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
-#include <unistd.h>
 #include <limits.h>
+#include <unistd.h>
 
-/* --- MACROS --- */
-#define BUFFER_SIZE 1024
-#define BINARY_BASE "01"
-#define OCTAL_BASE "01234567"
-#define DECIMAL_BASE "0123456789"
-#define HEXADECIMAL_BASE_UPPER "0123456789ABCDEF"
-#define HEXADECIMAL_BASE_LOWER "0123456789abcdef"
-#define PRINT_VAR_NAME(var) printf(#var " = %d\n", var)
 
-#define CHECK_RIGHT_JUSTIFICATION(value, format, count, justifier_func) \
-	{ \
-		if (!in_flags('-', format.flags)) \
-			justifier_func(value, format, count); \
-	}
-
-#define CHECK_LEFT_JUSTIFICATION(value, format, count, justifier_func) \
-	{ \
-		if (in_flags('-', format.flags)) \
-			justifier_func(value, format, count); \
-	}
-
-#define ABS(x) ((x) < 0 ? -(x) : (x))
-
-#define UNUSED(x) (void)(x)
-
-/** --- STRUCTURES --- */
 
 /**
- * struct format_s - all the format information
- * @flags: flags
- * @width: width
- * @precision: precision
- * @length: length
- * @specifier: specifier
+ * struct format - match the conversion specifiers for printf
+ * @id: type char pointer of the specifier i.e (l, h) for (d, i, u, o, x, X)
+ * @f: type pointer to function for the conversion specifier
+ *
  */
-typedef struct format_s
+
+typedef struct format
 {
-	char *flags;
-	int width;
-	int precision;
-	int length;
-	char specifier;
-} format_t;
+	char *id;
+	int (*f)();
+} convert_match;
 
-/**
- * struct format_specifier_s - format specifier
- * @specifier: specifier
- * @function: function to print the specifier
- */
-typedef struct format_specifier_s
-{
-	char *specifier;
-	void (*function)(va_list, format_t, void *);
-} format_specifier;
-
-/* --- FUNCTION PROTOTYPES --- */
-void print_char(va_list, format_t, void *);
-void print_string(va_list, format_t, void *);
-void print_percent(va_list, format_t, void *);
-void print_integer(va_list, format_t, void *);
-void print_binary(va_list, format_t, void *);
-void print_octal(va_list, format_t, void *);
-void print_hex(va_list, format_t, void *);
-void print_unsigned(va_list, format_t, void *);
-void print_reverse(va_list, format_t, void *);
-void print_rot13(va_list, format_t, void *);
-void print_address(va_list, format_t, void *);
-void print_string_non_printable(va_list, format_t, void *);
-
-
-/* --- Get format functions --- */
-int in_flags(char c, const char *flags);
-char *get_flags(const char **);
-int get_width(const char **);
-int get_precision(const char **);
-int get_length(const char **);
-char get_specifier(const char **);
-format_t get_format(const char **);
-
-
-int get_number_length(int);
-void justifier(char *, format_t, void *);
-
+int printf_pointer(va_list val);
+int printf_hex_aux(unsigned long int num);
+int printf_HEX_aux(unsigned int num);
+int printf_exclusive_string(va_list val);
+int printf_HEX(va_list val);
+int printf_hex(va_list val);
+int printf_oct(va_list val);
+int printf_unsigned(va_list args);
+int printf_bin(va_list val);
+int printf_srev(va_list args);
+int printf_rot13(va_list args);
+int printf_int(va_list args);
+int printf_dec(va_list args);
+int _strlen(char *s);
+int *_strcpy(char *dest, char *src);
+int _strlenc(const char *s);
+int rev_string(char *s);
+int _strlenc(const char *s);
+int printf_37(void);
+int printf_char(va_list val);
+int printf_string(va_list val);
+int _putchar(char c);
 int _printf(const char *format, ...);
-void _puts(char *, void *);
-void _putchar(char, void *);
 
-int _strlen(const char *);
-int _atoi(const char *);
-char *_itoa(ssize_t, char *);
-char *_utoa(size_t, char *);
-char *_strdup(char *);
-
-void print_hex_helper(unsigned long int number, char *base, void *count);
-
-#endif /* PRINTF_MAIN_H */
+#endif

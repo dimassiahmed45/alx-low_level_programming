@@ -1,72 +1,45 @@
 #include "main.h"
-#include <stdlib.h>
-#include <ctype.h>
-
 /**
- * is_alpha - checks if a character is alphabetic
- * @c: the character to check
- * Return: 1 if the character is alphabetic, 0 otherwise
+ * _printf - is a function that selects the correct function to print.
+ * @format: identifier to look for.
+ * Return: the length of the string.
  */
-int is_alpha(char c)
+int _printf(const char * const format, ...)
 {
-	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
-}
+	convert_match m[] = {
+		{"%s", printf_string}, {"%c", printf_char},
+		{"%%", printf_37},
+		{"%i", printf_int}, {"%d", printf_dec}, {"%r", printf_srev},
+		{"%R", printf_rot13}, {"%b", printf_bin}, {"%u", printf_unsigned},
+		{"%o", printf_oct}, {"%x", printf_hex}, {"%X", printf_HEX},
+		{"%S", printf_exclusive_string}, {"%p", printf_pointer}
+	};
 
-static format_specifier format_specifiers[] = {
-	{"c", print_char},
-	{"s", print_string},
-	{"%", print_percent},
-	{"d", print_integer},
-	{"i", print_integer},
-	{"b", print_binary},
-	{"o", print_octal},
-	{"x", print_hex},
-	{"X", print_hex},
-	{"u", print_unsigned},
-	{"p", print_address},
-	{"r", print_reverse},
-	{"R", print_rot13},
-	{"S", print_string_non_printable},
-	{NULL, NULL}
-};
-
-/**
- * _printf - produces output according to a format
- * @format: character string
- * Return: number of characters printed
- */
-int _printf(const char *format, ...)
-{
-	int count = 0, i;
-	format_t f = {0, -1, -1, -1, -1};
 	va_list args;
-
-	/* Note: printf segfaults if format is NULL */
-	if (!format)
-		return (-1);
+	int i = 0, j, len = 0;
 
 	va_start(args, format);
-	while (*format)
-	{
-		if (*format == '%')
-		{
-			format++;
-			f = get_format(&format);
-			if (f.flags == NULL)
-				return (-1);
+	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
+		return (-1);
 
-			for (i = 0; format_specifiers[i].specifier; ++i)
-				if (f.specifier == *format_specifiers[i].specifier)
-				{
-					format_specifiers[i].function(args, f, &count);
-					format++;
-					break;
-				}
-			free(f.flags);
+Here:
+	while (format[i] != '\0')
+	{
+		j = 13;
+		while (j >= 0)
+		{
+			if (m[j].id[0] == format[i] && m[j].id[1] == format[i + 1])
+			{
+				len += m[j].f(args);
+				i = i + 2;
+				goto Here;
+			}
+			j--;
 		}
-		else
-			_putchar(*format++, &count);
+		_putchar(format[i]);
+		len++;
+		i++;
 	}
 	va_end(args);
-	return (count);
+	return (len);
 }
