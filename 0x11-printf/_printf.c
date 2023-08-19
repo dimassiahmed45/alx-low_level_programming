@@ -3,7 +3,7 @@
 #include <ctype.h>
 
 /**
- * is_alpha - checks if a character is alphabetic
+ *
  * @c: the character to check
  * Return: 1 if the character is alphabetic, 0 otherwise
  */
